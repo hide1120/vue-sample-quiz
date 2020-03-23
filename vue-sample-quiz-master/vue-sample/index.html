@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>ファクトフルネス　クイズ</title>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="card" v-if="!completed">
+                <div class="card-body">
+                    <p class="badge badge-dark">第 {{ questionIndex+1 }} 問</p>
+                    <br>
+                    <h4 class="card-title">{{ currentQuestion.question }}</h4>
+                    <hr>
+                    <div>
+                    <button type="button" class="btn btn-primary btn-lg btn-block text-left" v-for="(answer,index) in currentQuestion.answers" @click="addAnswer(index)">{{ index+1 }}, {{ answer }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card" v-if="completed">
+                <div class="card-body">
+                    <p class="badge badge-dark">結果</p>
+                    <div v-for="(question,index) in this.questions">
+                        <h4 class="card-title">{{ question.question }}</h4>
+                        <ul>
+                            <li v-for="answer in question.answers">
+                                {{ answer }}
+                            </li>
+                            <div v-if="question.answer == answers[index]">正解</div>
+                            <div v-else>不正解 正解は{{ question.answers[question.answer] }}</div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            answers: [],
+            savaData:[],
+            questionIndex: 0,
+            questions: [
+                {
+                    question: '現在低所得国に暮らす女性の何割が、初等教育を修了するでしょう？',
+                    answers: [
+                        '20%',
+                        '40%',
+                        '60%',
+                    ],
+                    answer: 2
+                },
+                {
+                    question: '世界で最も多くの人が住んでいるのはどこでしょう？',
+                    answers: [
+                        '低所得国',
+                        '中所得国',
+                        '高所得国',
+                    ],
+                    answer: 1
+                },
+                {
+                    question: '世界の人口のうち、極度の貧困にある人の割合は、過去20年でどう変わったでしょう？',
+                    answers: [
+                        '約2倍',
+                        'あまり変わらない',
+                        '半分',
+                    ],
+                    answer: 2
+                }
+            ]
+        },
+        watch:{
+            tests: function(){
+                localStorage.setItem('tests',JSON.stringify(this.tests));
+            }
+        },
+        mounted: function() {
+            this.tests = JSON.parse(localStorage.getItem('tests')) || [];
+        },
+        methods: {
+            addAnswer: function (index) {
+                this.answers.push(index);
+                if (!this.completed) {
+                    this.questionIndex++;
+                }
+            }
+        },
+        computed: {
+            currentQuestion: function () {
+                return this.questions[this.questionIndex];
+            },
+            completed: function(){
+                return (this.questions.length == this.answers.length);
+            }
+        }
+    })
+</script>
+
+</html>
